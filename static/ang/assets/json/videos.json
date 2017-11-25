@@ -1,0 +1,54 @@
+{
+  "shows": [
+    {
+      "poster": "https://images.weserv.nl/?url=159.203.132.246:8080/admin//assets/uploads/the-glass-castle2017.jpg",
+      "slug": "15551",
+      "name": "The Glass Castle (2017)"
+    },
+    {
+      "poster": "https://images.weserv.nl/?url=159.203.132.246:8080/admin//assets/uploads/creep-22017.jpg",
+      "slug": "15552",
+      "name": "Creep 2 (2017)"
+    },
+    {
+      "poster": "https://images.weserv.nl/?url=159.203.132.246:8080/admin//assets/uploads/ingrid-goes-west2017.jpg",
+      "slug": "15549",
+      "name": "Ingrid Goes West (2017)"
+    },
+    {
+      "poster": "https://images.weserv.nl/?url=159.203.132.246:8080/admin//assets/uploads/wheres-the-money2017.jpg",
+      "slug": "15550",
+      "name": "Where's the Money (2017)"
+    },
+    {
+      "poster": "https://images.weserv.nl/?url=159.203.132.246:8080/admin//assets/uploads/atomic-blonde2017.jpg",
+      "slug": "15524",
+      "name": "Atomic Blonde (2017)"
+    },
+    {
+      "poster": "https://images.weserv.nl/?url=159.203.132.246:8080/admin//assets/uploads/columbus2017.jpg",
+      "slug": "15548",
+      "name": "Columbus (2017)"
+    },
+    {
+      "poster": "https://images.weserv.nl/?url=159.203.132.246:8080/admin//assets/uploads/cars-320171.jpg",
+      "slug": "15544",
+      "name": "Cars 3 (2017)"
+    },
+    {
+      "poster": "https://images.weserv.nl/?url=159.203.132.246:8080/admin//assets/uploads/hampstead2017.jpg",
+      "slug": "15547",
+      "name": "Hampstead (2017)"
+    },
+    {
+      "poster": "https://images.weserv.nl/?url=159.203.132.246:8080/admin//assets/uploads/a-very-sordid-wedding2017.jpg",
+      "slug": "15546",
+      "name": "A Very Sordid Wedding (2017)"
+    },
+    {
+      "poster": "https://images.weserv.nl/?url=159.203.132.246:8080/admin//assets/uploads/-fond2016.jpg",
+      "slug": "15545",
+      "name": "À fond (2016)"
+    }
+  ]
+}
