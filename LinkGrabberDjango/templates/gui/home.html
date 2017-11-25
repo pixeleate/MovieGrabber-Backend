@@ -1,0 +1,138 @@
+{% extends 'gui/base.html' %}
+{% load links_extras %}
+{% block content %}
+
+
+    <div class="container">
+        <div class="row">
+            <form action="searchaskforapi" method="get">
+
+                <div class="col-md-6 col-md-offset-3 ">
+                    <div class="input-group">
+
+                        <input type="text" id="search" name="id" class="form-control"
+                               placeholder="Search for TV-Show or Movie">
+                        <span class="input-group-btn">
+                        <button type="submit" class="btn btn-warning">Search</button>
+                    </span>
+                    </div>
+                </div>
+            </form>
+
+        </div>
+
+        <div class="row" style="padding-top: 5%"></div>
+
+        <div class="row">
+            <div class="{% if user.is_authenticated %} col-md-4
+                   {% else %} col-md-3 col-md-offset-3
+                   {% endif %}">
+                <div class="panel panel-warning">
+                    <div class="panel-heading">
+                        Recently Updated Movies
+                        <a href="{% url 'toplist' %}?cat=movies" class="glyphicon glyphicon-list pull-right"
+                           style="color: inherit;"></a>
+                    </div>
+                    <div class="panel-body media-list" id="movies">
+                        <center id="movies-loader">
+                            <div class="loader"></div>
+                        </center>
+                    </div>
+                </div>
+            </div>
+            <div class="{% if user.is_authenticated %} col-md-4
+                   {% else %} col-md-3
+                   {% endif %}">
+                <div class="panel panel-warning">
+                    <div class="panel-heading">
+                        Recently Updated Tv-Shows
+                        <a href="{% url 'toplist' %}?cat=tvshow" class="glyphicon glyphicon-list pull-right"
+                           style="color: inherit;"></a>
+                    </div>
+                    <div class="panel-body media-list" id="tvshow">
+
+                        <center id="movies-loader">
+                            <div class="loader"></div>
+                        </center>
+                    </div>
+                </div>
+            </div>
+            {% if user.is_authenticated %}
+                <div class="col-md-4">
+                    <div class="panel panel-info">
+                        <div class="panel-heading">
+                            Favourites
+                            <a href="{% url 'favourites' %}" class="glyphicon glyphicon-list pull-right"
+                               style="color: inherit;"></a>
+                        </div>
+                        <div class="panel-body media-list">
+
+                            {% for video in favourites %}
+                                <a href="{% url 'post_detail' id=video.showid title=video.showname %}" class="list-group-item">
+                <span class="media-left">
+                    <img src="{{ video.poster }}" class="media-object" height="48">
+                </span>
+                                    <span class="media-body">
+                             {{ video.showname }}
+                        </span>
+                                </a>
+                            {% endfor %}
+
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+
+        </div>
+    </div>
+    <script>
+
+        function getPopular(type) {
+            $.ajax({
+                url: '/api/media/getPopular',
+                data: {
+                    'type': type
+                },
+                dataType: 'json',
+                success: function (shows) {
+                    console.log(shows)
+                    var list = $("<div></div>");
+                    var links = shows.shows;
+                    for (id in links) {
+                        show = links[id];
+
+                        var item = $("<a></a>");
+                        item.attr("href", "/post/" + show.showid + "/" + show.showname + "/");
+                        item.attr("class", "list-group-item");
+
+                        var wrapper = $("<span></span>");
+                        wrapper.attr("class", "media-left");
+
+
+                        var poster = $("<img></img>");
+                        poster.attr("class", "media-object");
+                        poster.attr("src", show.poster);
+                        poster.attr("height", "48");
+
+                        var title = $("<span></span>");
+                        title.attr("class", "media-body");
+                        title.text(show.showname);
+                        wrapper.append(poster);
+                        item.append(wrapper, title);
+                        list.append(item);
+                        $("center#" + type + "-loader").attr("style", "display:none;");
+
+                    }
+                    $("div#" + type).append(list);
+
+
+                }
+            });
+        }
+
+        getPopular("tvshow");
+        getPopular("movies");
+    </script>
+
+{% endblock %}
+

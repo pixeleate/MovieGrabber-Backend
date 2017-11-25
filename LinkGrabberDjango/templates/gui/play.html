@@ -1,0 +1,157 @@
+{% extends 'gui/base.html' %}
+{% load links_extras %}
+{% load staticfiles %}
+{% block content %}
+    <div class="post">
+        <script src="{% static "js/videojs-chromecast.js" %}"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/videojs-youtube/2.4.0/Youtube.js"></script>
+
+        <div class="row">
+            <div class="col-md-12">
+                <div class="wrapper">
+                    <div class="embed-responsive embed-responsive-16by9 videocontent center-block">
+                        {% if isyt %}
+                            <iframe class="embed-responsive-item" id="wpm"
+                                    src="{{ post.link|urldecode }}"
+                                    scrolling="no" marginwidth="0" marginheight="0" frameborder="1px" vspace="0"
+                                    hspace="0" allowfullscreen="true" webkitallowfullscreen="true"
+                                    mozallowfullscreen="true"></iframe>
+                        {% else %}
+                            <video id="demo_player" class="video-js vjs-default-skin vjs-big-play-centered vjs-16-9"
+                                   controls preload="auto"
+                                   poster="{{ poster }}"
+                                   data-setup="{}">
+                                <source src="{{ post.link|urldecode }}" type="video/mp4">
+                                <source src="{{ post.link|urldecode }}" type="video/webm">
+                                {% if isshow %}
+                                {% else %}
+                                    <track kind="captions" src="/subtitle.vtt/{{ show }}/0" srclang="en" label="English"
+                                           default>
+                                {% endif %}
+
+                                <p class="vjs-no-js">To view this video please enable JavaScript, and consider upgrading
+                                    to
+                                    a web browser that <a href="https://videojs.com/html5-video-support/"
+                                                          target="_blank">supports
+                                        HTML5 video</a></p>
+                            </video>
+                        {% endif %}
+                    </div>
+                </div>
+
+            </div>
+<script>
+                var player = videojs('demo_player', {
+                chromecast: {
+                    appId: 'CC1AD845'
+                },
+                "autoplay": true
+            });
+</script>
+        </div>
+        {% if isshow %}
+            <div class="row">
+            <div class="col-md-8 col-md-offset-2">
+            <nav aria-label="...">
+
+                <ul class="pager">
+                    {% if prev %}
+
+                            <li class="previous">
+
+                                <a href="javascript:{}" onclick="playprev();"><span
+                                        aria-hidden="true">&larr;</span>Previous</a>
+
+
+                            </li>
+
+                    {% endif %}
+
+
+                    <li class="next">
+
+                        <a href="javascript:{}" onclick="playnext();">Next<span
+                                aria-hidden="true">&rarr;</span></a>
+                    </li>
+
+                </ul>
+            </nav>
+
+        {% endif %}
+        </div>
+
+        </div>
+        <script>
+            var thisepisode = {{ id }};
+            var timesexecuted = 0;
+            var isthisgoogle = {{ isyt|lower }};
+
+
+            {% if isshow %}
+                function playnext() {
+                    $.ajax({
+                        url: '/api/media/GetNextEpisode',
+                        data: {
+                            'showid': {{ showid }},
+                            "epid": thisepisode
+                        },
+                        dataType: 'json',
+                        success: function (data) {
+                            if ((data.shows.source === "google") || (isthisgoogle)) {
+                                window.location = "/play/{{ showid }}/" + data.shows.nextepid + "/" + data.shows.type;
+                            } else {
+                            player.pause();
+                            player.src({"type": "video/mp4", "src": data.shows.link});
+                            document.title = data.shows.title;
+
+                            thisepisode = data.shows.nextepid;
+                            player.play();
+                            executed = true;
+}
+                        }
+
+                    });
+                }
+                function playprev() {
+                    $.ajax({
+                        url: '/api/media/GetPrevEpisode',
+                        data: {
+                            'showid': {{ showid }},
+                            "epid": thisepisode
+                        },
+                        dataType: 'json',
+                        success: function (data) {
+                            if ((data.shows.source === "google") || (isthisgoogle)) {
+                                window.location = "/play/{{ showid }}/" + data.shows.prevepid + "/" + data.shows.type;
+                            } else {
+                            player.pause();
+                            player.src({"type": "video/mp4", "src": data.shows.link});
+                            document.title = data.shows.title;
+
+                            thisepisode = data.shows.prevepid;
+                            player.play();
+                            executed = true;}
+
+                        }
+
+                    });
+                }
+                {%  if request.user.profile.autoplaynext  %}
+                    player.on('ended', function () {
+                        if (timesexecuted < 5) {
+                            playnext();
+                            timesexecuted++;
+                        }
+
+
+                    });
+                {%  endif  %}
+            {%  endif  %}
+
+
+        </script>
+
+        <hr>
+    </div>
+
+{% endblock %}

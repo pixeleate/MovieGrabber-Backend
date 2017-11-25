@@ -1,0 +1,22 @@
+{% extends 'gui/base.html' %}
+{% block content %}
+    <div class="container" style="width: auto;">
+    <img src="https://i1.wp.com/www.horrorsociety.com/wp-content/uploads/2017/08/vlcsnap-2017-08-08-20h14m13s215.jpg?resize=758%2C426&ssl=1">
+    {% for post in posts %}
+        {% if forloop.first %}<div class="row justify-content-center" ><div class="col-md-2 justify-content-center"></div>{% endif %}
+    <div class="col-md-2 justify-content-center">
+<div class="thumbnail">
+          <a href="google.com">
+            <img src="https://i1.wp.com/www.horrorsociety.com/wp-content/uploads/2017/08/vlcsnap-2017-08-08-20h14m13s215.jpg?resize=758%2C426&ssl=1" alt="Lights" style="width:100%">
+            <div class="caption text-area">
+              <p class="text-center text-bold">FUCK OFF</p>
+            </div>
+          </a>
+        </div>
+        </div>
+    {% if forloop.counter|divisibleby:4 %}<div class="col-md-2 justify-content-center"></div></div><div class="row justify-content-center"><div class="col-md-2 justify-content-center"></div>{% endif %}
+    {% if forloop.last %}</div>{% endif %}
+{% endfor %}
+
+</div>
+{% endblock %}

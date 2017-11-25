@@ -1,0 +1,263 @@
+{% extends 'gui/base.html' %}
+{% load links_extras %}
+{% block content %}
+    <script src="http://code.stephenmorley.org/javascript/collapsible-lists/CollapsibleLists.js">
+    </script>
+    <div class="container jumbotron" id="loader">
+        <center>
+            <div class="loader"></div>
+        </center>
+    </div>
+    <div class="container jumbotron" id="thecontent" style="display: none;">
+
+        <div class="row justify-content-md-center">
+            <div class="col-md-1"></div>
+
+            <div class="col-md-4 thumbnail">
+                <img id="poster">
+                <div class="caption">
+                    <small  class="text-muted">Year: <span id="year"></span></small>
+
+                    <small  class="text-muted pull-right">Rating: <span id="rating"></span></small>
+                </div>
+            </div>
+            <div class="col-md-1"></div>
+
+            <div class="col-md-5">
+                <p class="h1">
+                    <small>{% if user.is_authenticated %}
+                        <i id="likes" style="cursor: pointer;cursor: hand;" class="glyphicon glyphicon-heart-empty"></i>
+
+
+                    {% endif %}<span id="title"></span></small>
+                </p>
+                <div class="scrollable-menu list-group" id="episodeList">
+
+                </div>
+
+            </div>
+            <div class="col-md-1"></div>
+
+        </div>
+        <div class="row">
+            <div class="col-md-10 container col-md-offset-1" id="related">
+
+            </div>
+        </div>
+        <div class="btn- row justify-content-md-center">
+            <div class="col-md-1"></div>
+
+            <div class="col-md-10 container">
+                <p class="lead" id="desc"></p>
+
+            </div>
+
+            <div class="col-md-1"></div>
+
+        </div>
+    </div>
+
+    <script>
+        if ({{ isfav|lower }}) {
+            $("i.glyphicon").removeClass("glyphicon-heart-empty");
+            $("i.glyphicon").addClass("glyphicon-heart");
+        }
+        var showid = {{ showid }};
+        var seen = {{ jsonseen|safe }};
+        function buildDetails() {
+            $.ajax({
+                url: '/api/media/getDetails',
+                data: {
+                    'id': showid
+                },
+                dataType: 'json',
+                success: function (show) {
+                    console.log(show.show);
+
+
+                    var list = $("<div></div>");
+                    var seasonlist = [];
+                    var episodes = show.show.posts;
+                    console.log(episodes.length);
+                    isshow = episodes.length > 10;
+                    $("img#poster").attr("src",show.show.poster);
+                    $("span#title").text(show.show.title);
+                    $("span#year").text(show.show.startyear);
+                    $("span#rating").text(show.show.rating);
+                    $("p#desc").text(show.show.desc);
+                    for (key in episodes) {
+
+                        //console.log(posts[key].id)
+                        if (isshow) {
+                            // Create the list item:
+                            var srctext = episodes[key].title;
+                            newtext = srctext.match(/S(\d?\d)E/g)[0];
+                            var Season = parseInt(newtext.replace(/^[^0-9]+/, ''), 10);
+                            if (typeof seasonlist[Season] !== 'undefined') {
+                            } else {
+                                seasonlist[Season] = $('<div class="panel panel-default" style="margin-bottom: 1px;"> <div class="panel-heading"> <h4 class="panel-title"> <a data-toggle="collapse" data-parent="#accordion" href="#collapse' + Season + '"> Season ' + Season + '</a> </h4> </div> <div id="collapse' + Season + '" class="panel-collapse collapse"> <div class="panel-body" style="padding: 1px;"></div> </div></div>');
+                            }
+                            var item = $("<form></form>");
+                            item.attr("action", "{% url 'links' %}");
+                            item.attr("method", "post");
+
+                            var epid = $("<input></input>");
+                            epid.attr("type", "hidden");
+                            epid.attr("name", "epid");
+                            epid.attr("value", episodes[key].id);
+
+                            var epname = $("<input></input>");
+                            epname.attr("type", "hidden");
+                            epname.attr("name", "epname");
+                            epname.attr("value", episodes[key].title);
+
+                            var showid = $("<input></input>");
+                            showid.attr("type", "hidden");
+                            showid.attr("name", "showid");
+                            showid.attr("value", {{ showid }});
+
+                            var csrf = $("{% csrf_token %}");
+                            var classAttr = "list-group-item ";
+                            if (seen.length !== 0) {
+                                if (seen.indexOf(episodes[key].id) >= 0) {
+                                    //do something
+                                    classAttr += "list-group-item-info";
+                                }
+                            }
+
+                            var button = $("<button></button>");
+                            button.attr("value", "{{ title }}");
+                            button.attr("name", "foo");
+                            button.attr("class", classAttr);
+                            button.text(episodes[key].title);
+                            item.append(epid, epname, showid, button, csrf);
+                            // Add it to the list:
+                            seasonlist[Season].find(".panel-body").append(item);
+                            list.append(seasonlist[Season])
+                        } else {
+                            var item = $("<form></form>");
+                            item.attr("action", "{% url 'links' %}");
+                            item.attr("method", "post");
+
+                            var epid = $("<input></input>");
+                            epid.attr("type", "hidden");
+                            epid.attr("name", "epid");
+                            epid.attr("value", episodes[key].id);
+
+                            var epname = $("<input></input>");
+                            epname.attr("type", "hidden");
+                            epname.attr("name", "epname");
+                            epname.attr("value", episodes[key].title);
+
+                            var showid = $("<input></input>");
+                            showid.attr("type", "hidden");
+                            showid.attr("name", "showid");
+                            showid.attr("value", {{ showid }});
+
+                            var csrf = $("{% csrf_token %}");
+                            var classAttr = "list-group-item ";
+                            if (seen.length != 0) {
+                                if (seen.indexOf(episodes[key].id) >= 0) {
+                                    //do something
+                                    classAttr += "list-group-item-info";
+                                }
+                            }
+
+                            var button = $("<button></button>");
+                            button.attr("value", "{{ title }}");
+                            button.attr("name", "foo");
+                            button.attr("class", classAttr);
+                            button.text(episodes[key].title);
+                            item.append(epid, epname, showid, button, csrf);
+                            // Add it to the list:
+                            list.append(item);
+                        }
+                    }
+                    $('#episodeList').append(list);
+                    $("div#loader").attr("style", "display:none;");
+                    $("div#thecontent").attr("style", "");
+
+
+
+                }
+            });
+        }
+        function getRecommended() {
+            $.ajax({
+                url: 'https://moviegrabber.tv/api/account/fiverecommended',
+                data: {
+                    'id': showid
+                },
+                dataType: 'json',
+                success: function (shows) {
+                    var list = $("<div></div>");
+                    var links = shows.shows;
+                    for (id in links) {
+                        show = links[id];
+
+                        var item = $("<a></a>");
+                        item.attr("href", "/post/" + show.showid + "/" + show.showname + "/");
+                        item.attr("class", "list-group-item col-md-6");
+                        item.attr("style", "color: inherit;text-decoration: inherit;");
+
+                        var wrapper = $("<div></div>");
+                        wrapper.attr("class", "panel-body media-list");
+                        wrapper.attr("style", "padding: 1px;");
+
+                        var imagewrapper = $("<div></div>");
+                        imagewrapper.attr("class", "col-md-2");
+
+                        var poster = $("<img></img>");
+                        poster.attr("class", "media-left");
+                        poster.attr("src", show.poster);
+                        poster.attr("height", "50");
+                        imagewrapper.append(poster);
+
+                        var title = $("<h2></h2>");
+                        title.attr("class", "text-center media-body");
+                        title.attr("style", "line-height: 48px;top: 0; bottom: 0; margin: auto;color: #8492af;font-size: 21px;font-weight: 600;");
+                        title.text(show.showname);
+                        wrapper.append(imagewrapper, title);
+                        item.append(wrapper);
+                        list.append(item);
+
+
+                    }
+                    $("div#related").append(list);
+
+
+                }
+            });
+        }
+
+        getRecommended();
+        $(document).ready(function () {
+            buildDetails();
+
+            $("i.glyphicon").click(function () {
+                var thiselement = this;
+                $.ajax({
+                    url: '/api/account/favourite',
+                    data: {
+                        'id': showid
+                    },
+                    dataType: 'json',
+                    success: function (data) {
+                        if (data.Favourite) {
+                            $(thiselement).removeClass("glyphicon-heart-empty");
+                            $(thiselement).addClass("glyphicon-heart");
+                        } else {
+                            $(thiselement).addClass("glyphicon-heart-empty");
+                            $(thiselement).removeClass("glyphicon-heart");
+                        }
+                    }
+
+                });
+            })
+        })
+    </script>
+
+
+
+
+{% endblock %}
